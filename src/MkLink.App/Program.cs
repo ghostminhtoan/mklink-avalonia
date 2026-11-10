@@ -8,6 +8,7 @@ namespace MkLink
         [STAThread]
         public static void Main(string[] args)
         {
+            Services.AdminDragDropHelper.EnableProcessWideFilter();
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
 

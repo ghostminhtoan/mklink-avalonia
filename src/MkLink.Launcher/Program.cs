@@ -14,25 +14,52 @@ namespace MkLink.Launcher
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool FreeConsole();
+
         [STAThread]
         public static void Main(string[] args)
         {
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string runtimesDir = Path.Combine(baseDir, ".portable", "runtimes");
+            string mainAppDll = Path.Combine(runtimesDir, "MkLink.App.dll");
 
-            if (!Directory.Exists(runtimesDir))
+            // Kiểm tra nếu chưa có runtimes thì tự động tải về với 16 kết nối song song
+            if (!Directory.Exists(runtimesDir) || !File.Exists(mainAppDll))
             {
+                // Kiểm tra fallback local
                 string localAppDll = Path.Combine(baseDir, "MkLink.App.dll");
                 if (File.Exists(localAppDll))
                 {
                     runtimesDir = baseDir;
+                    mainAppDll = localAppDll;
                 }
                 else
                 {
-                    MessageBox(IntPtr.Zero,
-                        "Không tìm thấy thư mục thư viện runtimes:\n" + runtimesDir + "\n\nVui lòng chạy script Run-Release.ps1 để build vào thư mục publish đầy đủ.",
-                        "MkLink-GMTPC Launcher Error", 0x10);
-                    return;
+                    // Mở console để hiển thị tiến độ tải đa luồng
+                    bool consoleAllocated = AllocConsole();
+                    try
+                    {
+                        Console.Title = "MkLink-GMTPC - Đang Tải Gói Runtimes...";
+                        bool downloaded = RuntimesDownloader.DownloadAndExtractRuntimes(runtimesDir);
+                        if (!downloaded || !File.Exists(mainAppDll))
+                        {
+                            MessageBox(IntPtr.Zero,
+                                "Không thể tự động tải gói runtimes từ GitHub Release assets.\n\nVui lòng kiểm tra kết nối mạng hoặc giải nén runtimes vào thư mục:\n" + runtimesDir,
+                                "MkLink-GMTPC Lỗi Tải Runtimes", 0x10);
+                            return;
+                        }
+                    }
+                    finally
+                    {
+                        if (consoleAllocated)
+                        {
+                            FreeConsole();
+                        }
+                    }
                 }
             }
 
@@ -101,15 +128,6 @@ namespace MkLink.Launcher
 
                 return IntPtr.Zero;
             };
-
-            string mainAppDll = Path.Combine(runtimesDir, "MkLink.App.dll");
-            if (!File.Exists(mainAppDll))
-            {
-                MessageBox(IntPtr.Zero,
-                    "Không tìm thấy file thực thi chính:\n" + mainAppDll,
-                    "MkLink-GMTPC Launcher Error", 0x10);
-                return;
-            }
 
             try
             {

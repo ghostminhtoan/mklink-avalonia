@@ -22,7 +22,8 @@
                      FontSize="11" Foreground="#9CA3AF"/>
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
-          <Button Content="Tài trợ / Donate GMTPC" Classes="accent" Click="DonateAuthorButton_Click"/>
+          <Button x:Name="UpdateBetaButton" Content="Cập nhật Beta" Classes="accent" Click="UpdateBetaButton_Click" ToolTip.Tip="Kiểm tra và tự động cập nhật bản Beta mới nhất từ GitHub"/>
+          <Button Content="Tài trợ / Donate GMTPC" Click="DonateAuthorButton_Click"/>
         </StackPanel>
       </Grid>
     </Border>

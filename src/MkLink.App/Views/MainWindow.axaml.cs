@@ -50,6 +50,18 @@ namespace MkLink.Views
         private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
         {
             AttachViewModel();
+
+            try
+            {
+                var platformHandle = TryGetPlatformHandle();
+                if (platformHandle != null && platformHandle.Handle != IntPtr.Zero)
+                {
+                    AdminDragDropHelper.EnableWindowFilter(platformHandle.Handle);
+                }
+            }
+            catch
+            {
+            }
         }
 
         private void AttachViewModel()
@@ -351,6 +363,42 @@ namespace MkLink.Views
                 catch (Exception ex)
                 {
                     SetStatus("Lỗi nạp file: " + ex.Message);
+                }
+            }
+        }
+
+        private async void UpdateBetaButton_Click(object? sender, RoutedEventArgs? e)
+        {
+            if (sender is Button btn)
+            {
+                btn.IsEnabled = false;
+                btn.Content = "Đang kiểm tra...";
+            }
+
+            try
+            {
+                var (success, msg) = await AutoUpdateService.CheckAndUpdateBetaAsync(status =>
+                {
+                    SetStatus(status);
+                });
+
+                if (!success)
+                {
+                    SetStatus("Cập nhật Beta: " + msg);
+                    if (sender is Button b)
+                    {
+                        b.IsEnabled = true;
+                        b.Content = "Cập nhật Beta";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SetStatus("Lỗi cập nhật Beta: " + ex.Message);
+                if (sender is Button b)
+                {
+                    b.IsEnabled = true;
+                    b.Content = "Cập nhật Beta";
                 }
             }
         }

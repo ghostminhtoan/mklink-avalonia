@@ -25,3 +25,7 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+*.zip
+.edge_profile/
+*.tmp
+*.bak

@@ -22,7 +22,6 @@ namespace MkLink.Launcher
 
             if (!Directory.Exists(runtimesDir))
             {
-                // Fallback nếu đang dev hoặc file dll nằm ngay cạnh exe
                 string localAppDll = Path.Combine(baseDir, "MkLink.App.dll");
                 if (File.Exists(localAppDll))
                 {
@@ -31,13 +30,13 @@ namespace MkLink.Launcher
                 else
                 {
                     MessageBox(IntPtr.Zero,
-                        "Không tìm thấy thư mục thư viện runtimes:\n" + runtimesDir + "\n\nVui lòng chạy script Run-Release.ps1 để build và cấu trúc đầy đủ.",
+                        "Không tìm thấy thư mục thư viện runtimes:\n" + runtimesDir + "\n\nVui lòng chạy script Run-Release.ps1 để build vào thư mục publish đầy đủ.",
                         "MkLink-GMTPC Launcher Error", 0x10);
                     return;
                 }
             }
 
-            // Thiết lập tìm kiếm DLL unmanaged / native (như libSkiaSharp.dll)
+            // 1. Đặt thư mục DLL native cho Windows
             try
             {
                 SetDllDirectory(runtimesDir);
@@ -46,7 +45,7 @@ namespace MkLink.Launcher
             {
             }
 
-            // Hook load các managed assemblies từ .portable\runtimes
+            // 2. Hook resolver cho managed assemblies
             AssemblyLoadContext.Default.Resolving += (context, assemblyName) =>
             {
                 string candidate = Path.Combine(runtimesDir, assemblyName.Name + ".dll");
@@ -61,6 +60,46 @@ namespace MkLink.Launcher
                     }
                 }
                 return null;
+            };
+
+            // 3. Hook resolver cho unmanaged / native DLLs (SkiaSharp, etc.)
+            AssemblyLoadContext.Default.ResolvingUnmanagedDll += (assembly, unmanagedDllName) =>
+            {
+                string nativeCandidate = Path.Combine(runtimesDir, unmanagedDllName);
+                if (!nativeCandidate.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                {
+                    nativeCandidate += ".dll";
+                }
+
+                if (File.Exists(nativeCandidate))
+                {
+                    try
+                    {
+                        return NativeLibrary.Load(nativeCandidate);
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                string subNative = Path.Combine(runtimesDir, "runtimes", "win-x64", "native", unmanagedDllName);
+                if (!subNative.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                {
+                    subNative += ".dll";
+                }
+
+                if (File.Exists(subNative))
+                {
+                    try
+                    {
+                        return NativeLibrary.Load(subNative);
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return IntPtr.Zero;
             };
 
             string mainAppDll = Path.Combine(runtimesDir, "MkLink.App.dll");

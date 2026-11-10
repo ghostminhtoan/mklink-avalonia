@@ -24,8 +24,14 @@ namespace MkLink.Views
         {
             InitializeComponent();
 
-            TitleTextBlock.Text = "MkLink-GMTPC Path Mapper | Build: " + GetBuildTimeText();
-            BuildInfoTextBlock.Text = ".NET 8.0 Windows x64 Portable | " + GetBuildTimeText();
+            if (TitleTextBlock != null)
+            {
+                TitleTextBlock.Text = "MkLink-GMTPC Path Mapper | Build: " + GetBuildTimeText();
+            }
+            if (BuildInfoTextBlock != null)
+            {
+                BuildInfoTextBlock.Text = ".NET 8.0 Windows x64 Portable | " + GetBuildTimeText();
+            }
 
             AddHandler(KeyDownEvent, MainWindow_KeyDown, RoutingStrategies.Tunnel);
             AddHandler(DragDrop.DropEvent, MainWindow_Drop);
@@ -35,9 +41,20 @@ namespace MkLink.Views
             Closing += MainWindow_Closing;
         }
 
+        protected override void OnDataContextChanged(EventArgs e)
+        {
+            base.OnDataContextChanged(e);
+            AttachViewModel();
+        }
+
         private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
         {
-            if (ViewModel != null)
+            AttachViewModel();
+        }
+
+        private void AttachViewModel()
+        {
+            if (ViewModel != null && CheckMklinkControl != null)
             {
                 CheckMklinkControl.BindViewModel(ViewModel);
             }

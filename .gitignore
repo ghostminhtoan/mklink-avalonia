@@ -17,6 +17,8 @@ artifacts_temp/
 # Portable deployed runtimes (chỉ commit source code và cấu trúc thư mục)
 .portable/runtimes/
 .portable/settings/*.txt
+publish/.portable/runtimes/
+publish/.portable/settings/*.txt
 
 # OS generated files
 Thumbs.db

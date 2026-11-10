@@ -15,11 +15,17 @@ namespace MkLink.Views
         private MainViewModel? _viewModel;
         private readonly List<MklinkCheckEntry> _allEntries = new List<MklinkCheckEntry>();
         private readonly ObservableCollection<MklinkCheckEntry> _displayedEntries = new ObservableCollection<MklinkCheckEntry>();
+        private bool _isInitialized;
 
         public CheckMklinkView()
         {
             InitializeComponent();
-            CheckGrid.ItemsSource = _displayedEntries;
+            if (CheckGrid != null)
+            {
+                CheckGrid.ItemsSource = _displayedEntries;
+            }
+            _isInitialized = true;
+            UpdateSummary();
         }
 
         public void BindViewModel(MainViewModel viewModel)
@@ -45,6 +51,8 @@ namespace MkLink.Views
 
         private void ApplyFilters()
         {
+            if (!_isInitialized) return;
+
             string keyword = SearchBox?.Text?.Trim() ?? string.Empty;
             int statusIndex = StatusFilterComboBox?.SelectedIndex ?? 0;
             int matchIndex = MatchFilterComboBox?.SelectedIndex ?? 0;
@@ -94,6 +102,8 @@ namespace MkLink.Views
 
         private void UpdateSummary()
         {
+            if (SummaryTextBlock == null) return;
+
             int linkCount = 0;
             int missingCount = 0;
             for (int i = 0; i < _allEntries.Count; i++)
@@ -108,7 +118,11 @@ namespace MkLink.Views
 
         private void RefreshButton_Click(object? sender, RoutedEventArgs e) => RefreshFromSource();
 
-        private void FilterComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e) => ApplyFilters();
+        private void FilterComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (!_isInitialized) return;
+            ApplyFilters();
+        }
 
         private void SearchBox_TextChanged(object? sender, TextChangedEventArgs e) => ApplyFilters();
 

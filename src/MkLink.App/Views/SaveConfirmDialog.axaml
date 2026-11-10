@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MkLink.Views.SaveConfirmDialog"
+        Title="Xác nhận Lưu File"
+        Width="460"
+        Height="190"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#1E1E1E"
+        Foreground="#E0E0E0">
+  <Border Padding="20">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <StackPanel Grid.Row="0" Spacing="6">
+        <TextBlock Text="File đã tồn tại!" FontSize="15" FontWeight="Bold" Foreground="#60A5FA"/>
+        <TextBlock x:Name="FilePathTextBlock"
+                   TextWrapping="Wrap"
+                   FontSize="12"
+                   Foreground="#9CA3AF"/>
+        <TextBlock Text="Bạn muốn ghi đè lên file này hay lưu thành file mới?"
+                   FontSize="12"
+                   Margin="0,4,0,0"/>
+      </StackPanel>
+
+      <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+        <Button Classes="primary" Content="Ghi đè file cũ" Click="OverwriteButton_Click" Width="110"/>
+        <Button Content="Lưu file mới..." Click="SaveAsButton_Click" Width="110"/>
+        <Button Content="Hủy" Click="CancelButton_Click" Width="80"/>
+      </StackPanel>
+    </Grid>
+  </Border>
+</Window>

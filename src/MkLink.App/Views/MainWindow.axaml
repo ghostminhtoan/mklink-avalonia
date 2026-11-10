@@ -1,0 +1,297 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:MkLink.ViewModels"
+        xmlns:views="clr-namespace:MkLink.Views"
+        xmlns:models="clr-namespace:MkLink.Models"
+        x:Class="MkLink.Views.MainWindow"
+        Title="MkLink-GMTPC | Path Mapper"
+        Height="820" Width="1180"
+        MinHeight="680" MinWidth="750"
+        Background="#18181B"
+        Foreground="#F4F4F5"
+        Icon="/Assets/mklink.ico"
+        DragDrop.AllowDrop="True">
+  
+  <Grid RowDefinitions="Auto,*,Auto" Margin="10">
+    <!-- Top Header -->
+    <Border Grid.Row="0" Classes="panel" Padding="12,10" Margin="0,0,0,8">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="2">
+          <TextBlock x:Name="TitleTextBlock" Text="MkLink-GMTPC Path Mapper" FontSize="16" FontWeight="Bold" Foreground="#60A5FA"/>
+          <TextBlock Text="Standalone Windows Portable — Tối ưu cho NTFS Reparse Points, Symlink, Directory Junctions."
+                     FontSize="11" Foreground="#9CA3AF"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+          <Button Content="Tài trợ / Donate GMTPC" Classes="accent" Click="DonateAuthorButton_Click"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Shell chính: Nội dung + Sidebar -->
+    <Border Grid.Row="1" Classes="panel" Padding="8">
+      <Grid ColumnDefinitions="*,150">
+        <!-- Main Content Area -->
+        <TabControl Grid.Column="0" Margin="0,0,8,0">
+          <!-- TAB 1: DIRECT -->
+          <TabItem Header="Direct">
+            <TabControl Margin="0,6,0,0">
+              <!-- SUBTAB: COPY (MASTER) -->
+              <TabItem Header="COPY">
+                <Grid RowDefinitions="Auto,*,*" Margin="0,4,0,0">
+                  <!-- Thanh cấu hình Target Root -->
+                  <Border Grid.Row="0" Classes="panel" Padding="10,6" Margin="0,0,0,6">
+                    <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                      <Button Content="Chọn Root Folder..." Click="BrowseRootFolderButton_Click" Margin="0,2,10,2"/>
+                      <TextBlock Text="Subfolder:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#9CA3AF"/>
+                      <TextBox Width="160" Text="{Binding CopyTab.SubfolderName, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,2,8,2"/>
+                      <Button Content="Áp dụng Target" Command="{Binding CopyTab.ApplyTargetCommand}" Classes="primary" Margin="0,2,12,2"/>
+                      <TextBlock Text="{Binding CopyTab.RootTargetPath, StringFormat='Đích đến: {0}'}"
+                                 VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#34D399" Margin="0,2,0,2"/>
+                    </WrapPanel>
+                  </Border>
+
+                  <!-- Panel INPUT -->
+                  <Border Grid.Row="1" Classes="panel" Padding="8" Margin="0,0,0,6">
+                    <Grid RowDefinitions="Auto,*">
+                      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,4">
+                        <TextBlock Grid.Column="0" Classes="panelTitle" Text="INPUT (Danh sách nguồn)"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                          <Button Content="Sort Input" Click="SortInputButton_Click" Padding="6,2" FontSize="11"/>
+                          <Button Content="Sort Normalize" Click="SortNormalizeButton_Click" Padding="6,2" FontSize="11"/>
+                        </StackPanel>
+                      </Grid>
+
+                      <DataGrid Grid.Row="1"
+                                x:Name="CopyInputGrid"
+                                ItemsSource="{Binding CopyTab.SourceItems}"
+                                AutoGenerateColumns="False"
+                                SelectionMode="Extended">
+                        <DataGrid.Columns>
+                          <DataGridTextColumn Header="Input" Binding="{Binding OriginalInput, Mode=TwoWay}" Width="*"/>
+                          <DataGridTextColumn Header="Normalize Input" Binding="{Binding NormalizedInput}" Width="*" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                      </DataGrid>
+                    </Grid>
+                  </Border>
+
+                  <!-- Panel OUTPUT -->
+                  <Border Grid.Row="2" Classes="panel" Padding="8">
+                    <Grid RowDefinitions="Auto,*">
+                      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,4">
+                        <TextBlock Grid.Column="0" Classes="panelTitle" Text="OUTPUT (Đích mapping)"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                          <Button Content="Sort Edited" Click="SortEditedButton_Click" Padding="6,2" FontSize="11"/>
+                        </StackPanel>
+                      </Grid>
+
+                      <DataGrid Grid.Row="1"
+                                x:Name="CopyOutputGrid"
+                                ItemsSource="{Binding CopyTab.SourceItems}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                SelectionMode="Extended">
+                        <DataGrid.ContextMenu>
+                          <ContextMenu>
+                            <MenuItem Header="Chỉnh sửa Output Path..." Click="EditOutputPathMenuItem_Click"/>
+                            <MenuItem Header="Khôi phục Default Path" Click="RestoreDefaultPathMenuItem_Click"/>
+                          </ContextMenu>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                          <DataGridTextColumn Header="Output Mapped" Binding="{Binding MappedTarget}" Width="*"/>
+                          <DataGridTextColumn Header="Edit Output (Tùy biến)" Binding="{Binding EffectiveOutputPath}" Width="*"/>
+                          <DataGridTextColumn Header="Trạng thái" Binding="{Binding EditOutputStateText}" Width="100"/>
+                        </DataGrid.Columns>
+                      </DataGrid>
+                    </Grid>
+                  </Border>
+                </Grid>
+              </TabItem>
+
+              <!-- SUBTAB: DELETE (MIRROR) -->
+              <TabItem Header="DELETE">
+                <Grid RowDefinitions="Auto,*" Margin="0,4,0,0">
+                  <Border Grid.Row="0" Classes="panel" Padding="10,6" Margin="0,0,0,6">
+                    <TextBlock Text="DELETE đồng bộ nguồn từ Tab COPY — Chỉ thao tác trên Input nguồn để xóa trước khi tạo mklink."
+                               Foreground="#9CA3AF" FontSize="12"/>
+                  </Border>
+                  <Border Grid.Row="1" Classes="panel" Padding="8">
+                    <DataGrid ItemsSource="{Binding DeleteTab.SourceItems}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True">
+                      <DataGrid.Columns>
+                        <DataGridTextColumn Header="Input" Binding="{Binding OriginalInput}" Width="*"/>
+                        <DataGridTextColumn Header="Normalize Input" Binding="{Binding NormalizedInput}" Width="*"/>
+                      </DataGrid.Columns>
+                    </DataGrid>
+                  </Border>
+                </Grid>
+              </TabItem>
+
+              <!-- SUBTAB: MKLINK D (MIRROR) -->
+              <TabItem Header="MKLINK D">
+                <Grid RowDefinitions="Auto,*,*" Margin="0,4,0,0">
+                  <Border Grid.Row="0" Classes="panel" Padding="10,6" Margin="0,0,0,6">
+                    <TextBlock Text="MKLINK D đồng bộ nguồn từ Tab COPY — Sinh lệnh liên kết thư mục (Directory Symlink)."
+                               Foreground="#9CA3AF" FontSize="12"/>
+                  </Border>
+                  <!-- Input mirror -->
+                  <Border Grid.Row="1" Classes="panel" Padding="8" Margin="0,0,0,6">
+                    <DataGrid ItemsSource="{Binding MklinkTab.SourceItems}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True">
+                      <DataGrid.Columns>
+                        <DataGridTextColumn Header="Input" Binding="{Binding OriginalInput}" Width="*"/>
+                        <DataGridTextColumn Header="Normalize Input" Binding="{Binding NormalizedInput}" Width="*"/>
+                      </DataGrid.Columns>
+                    </DataGrid>
+                  </Border>
+                  <!-- Output mirror -->
+                  <Border Grid.Row="2" Classes="panel" Padding="8">
+                    <DataGrid ItemsSource="{Binding MklinkTab.SourceItems}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True">
+                      <DataGrid.Columns>
+                        <DataGridTextColumn Header="Output Mapped" Binding="{Binding MappedTarget}" Width="*"/>
+                        <DataGridTextColumn Header="Edit Output" Binding="{Binding EffectiveOutputPath}" Width="*"/>
+                      </DataGrid.Columns>
+                    </DataGrid>
+                  </Border>
+                </Grid>
+              </TabItem>
+            </TabControl>
+          </TabItem>
+
+          <!-- TAB 2: CHECK MKLINK -->
+          <TabItem Header="Check mklink">
+            <views:CheckMklinkView x:Name="CheckMklinkControl"/>
+          </TabItem>
+
+          <!-- TAB 3: RESULT -->
+          <TabItem Header="Result">
+            <TabControl Margin="0,6,0,0">
+              <!-- Section Direct -->
+              <TabItem Header="Direct Results">
+                <TabControl Margin="0,6,0,0">
+                  <TabItem Header="Result COPY">
+                    <Grid RowDefinitions="*,Auto" Margin="0,6,0,0">
+                      <TextBox Grid.Row="0" Text="{Binding CopyTab.ScriptResult}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="8">
+                        <Button Content="Copy Script" Click="CopyCurrentResult_Click" Classes="primary" Tag="CopyTab"/>
+                        <Button Content="Copy, delete and mklink" Click="CopyDeleteMklinkDirect_Click" Classes="accent"/>
+                        <Button Content="Delete and mklink" Click="DeleteMklinkDirect_Click" Classes="danger"/>
+                      </StackPanel>
+                    </Grid>
+                  </TabItem>
+
+                  <TabItem Header="Result DELETE">
+                    <Grid RowDefinitions="*,Auto" Margin="0,6,0,0">
+                      <TextBox Grid.Row="0" Text="{Binding DeleteTab.ScriptResult}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="8">
+                        <Button Content="Copy Script" Click="CopyCurrentResult_Click" Classes="primary" Tag="DeleteTab"/>
+                      </StackPanel>
+                    </Grid>
+                  </TabItem>
+
+                  <TabItem Header="Result MKLINK D">
+                    <Grid RowDefinitions="*,Auto" Margin="0,6,0,0">
+                      <TextBox Grid.Row="0" Text="{Binding MklinkTab.ScriptResult}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="8">
+                        <Button Content="Copy Script" Click="CopyCurrentResult_Click" Classes="primary" Tag="MklinkTab"/>
+                      </StackPanel>
+                    </Grid>
+                  </TabItem>
+
+                  <TabItem Header="Combined (Copy + Del + Mklink)">
+                    <Grid RowDefinitions="*,Auto" Margin="0,6,0,0">
+                      <TextBox Grid.Row="0" Text="{Binding CombinedCopyDeleteMklinkScript}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="8">
+                        <Button Content="Copy Combined Script" Click="CopyCombinedDirect_Click" Classes="primary"/>
+                        <Button Content="Chạy Copy, delete and mklink" Click="CopyDeleteMklinkDirect_Click" Classes="accent"/>
+                        <Button Content="Chạy Delete and mklink" Click="DeleteMklinkDirect_Click" Classes="danger"/>
+                      </StackPanel>
+                    </Grid>
+                  </TabItem>
+                </TabControl>
+              </TabItem>
+
+              <!-- Section Reverse -->
+              <TabItem Header="Reverse Results">
+                <TabControl Margin="0,6,0,0">
+                  <TabItem Header="Result COPY REVERSE">
+                    <Grid RowDefinitions="*,Auto" Margin="0,6,0,0">
+                      <TextBox Grid.Row="0" Text="{Binding CopyReverseTab.ScriptResult}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="8">
+                        <Button Content="Copy Script" Click="CopyCurrentResult_Click" Classes="primary" Tag="CopyReverseTab"/>
+                        <Button Content="Chạy Copy reverse" Click="RunCopyReverse_Click" Classes="primary"/>
+                        <Button Content="Chạy Delete and copy reverse" Click="RunDeleteAndCopyReverse_Click" Classes="purple"/>
+                      </StackPanel>
+                    </Grid>
+                  </TabItem>
+
+                  <TabItem Header="Result DELETE REVERSE">
+                    <Grid RowDefinitions="*,Auto" Margin="0,6,0,0">
+                      <TextBox Grid.Row="0" Text="{Binding DeleteReverseTab.ScriptResult}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="8">
+                        <Button Content="Copy Script" Click="CopyCurrentResult_Click" Classes="primary" Tag="DeleteReverseTab"/>
+                        <Button Content="Chạy Delete reverse" Click="RunDeleteReverse_Click" Classes="danger"/>
+                      </StackPanel>
+                    </Grid>
+                  </TabItem>
+
+                  <TabItem Header="Combined Reverse (Del + Copy + Del)">
+                    <Grid RowDefinitions="*,Auto" Margin="0,6,0,0">
+                      <TextBox Grid.Row="0" Text="{Binding CombinedDeleteAndCopyReverseScript}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="8">
+                        <Button Content="Copy Combined Script" Click="CopyCombinedReverse_Click" Classes="primary"/>
+                        <Button Content="Chạy Delete and copy reverse" Click="RunDeleteAndCopyReverse_Click" Classes="purple"/>
+                      </StackPanel>
+                    </Grid>
+                  </TabItem>
+                </TabControl>
+              </TabItem>
+            </TabControl>
+          </TabItem>
+        </TabControl>
+
+        <!-- Sidebar Pinned bên phải -->
+        <Border Grid.Column="1" Classes="panel" Padding="8">
+          <ScrollViewer>
+            <StackPanel Spacing="8">
+              <TextBlock Text="THAO TÁC" FontWeight="Bold" FontSize="12" Foreground="#93C5FD" HorizontalAlignment="Center"/>
+
+              <Button Content="Lưu MD (Ctrl+S)" Click="SaveMarkdownButton_Click" HorizontalAlignment="Stretch" Classes="primary"/>
+              <Button Content="Mở MD (Ctrl+O)" Click="LoadMarkdownButton_Click" HorizontalAlignment="Stretch"/>
+
+              <Separator Background="#3F3F46" Margin="0,4"/>
+
+              <Button Content="Undo (Ctrl+Z)" Command="{Binding UndoCommand}" HorizontalAlignment="Stretch" IsEnabled="{Binding CanUndo}"/>
+              <Button Content="Redo (Ctrl+Y)" Command="{Binding RedoCommand}" HorizontalAlignment="Stretch" IsEnabled="{Binding CanRedo}"/>
+
+              <Separator Background="#3F3F46" Margin="0,4"/>
+
+              <Button Content="Xóa dòng chọn" Click="DeleteSelectedRows_Click" Classes="danger" HorizontalAlignment="Stretch"/>
+              <Button Content="Xóa toàn bộ" Click="ClearAllRows_Click" Classes="danger" HorizontalAlignment="Stretch"/>
+
+              <Separator Background="#3F3F46" Margin="0,4"/>
+
+              <ToggleButton Content="Word Wrap" IsChecked="{Binding IsWordWrapEnabled, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+
+              <Separator Background="#3F3F46" Margin="0,4"/>
+
+              <TextBlock Text="ĐỘC LẬP PORTABLE" FontSize="10" Foreground="#9CA3AF" TextWrapping="Wrap" TextAlignment="Center"/>
+              <TextBlock Text=".portable/settings" FontSize="9" Foreground="#6B7280" TextAlignment="Center"/>
+            </StackPanel>
+          </ScrollViewer>
+        </Border>
+      </Grid>
+    </Border>
+
+    <!-- Bottom Status Bar -->
+    <Border Grid.Row="2" Classes="panel" Padding="8,4" Margin="0,6,0,0">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Grid.Column="0" x:Name="StatusMessageTextBlock" Text="Sẵn sàng." FontSize="11" Foreground="#9CA3AF"/>
+        <TextBlock Grid.Column="1" x:Name="BuildInfoTextBlock" Text=".NET 8.0 Windows x64 Portable" FontSize="11" Foreground="#6B7280"/>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

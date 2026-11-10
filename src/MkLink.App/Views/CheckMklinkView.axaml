@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:MkLink.Models"
+             x:Class="MkLink.Views.CheckMklinkView">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8">
+    <!-- Toolbar trên -->
+    <Border Grid.Row="0" Classes="panel" Padding="10,8" Margin="0,0,0,8">
+      <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <Button Content="Làm mới (Refresh)" Click="RefreshButton_Click" Margin="0,2,8,2" Classes="primary"/>
+        
+        <!-- Bộ lọc Status -->
+        <TextBlock Text="Trạng thái:" VerticalAlignment="Center" Margin="8,0,4,0" Foreground="#9CA3AF"/>
+        <ComboBox x:Name="StatusFilterComboBox" SelectionChanged="FilterComboBox_SelectionChanged" SelectedIndex="0" Width="120" Margin="0,2,8,2">
+          <ComboBoxItem Content="Tất cả"/>
+          <ComboBoxItem Content="MKLINK"/>
+          <ComboBoxItem Content="Folder thật"/>
+          <ComboBoxItem Content="Chưa có"/>
+        </ComboBox>
+
+        <!-- Bộ lọc Match -->
+        <TextBlock Text="So khớp:" VerticalAlignment="Center" Margin="8,0,4,0" Foreground="#9CA3AF"/>
+        <ComboBox x:Name="MatchFilterComboBox" SelectionChanged="FilterComboBox_SelectionChanged" SelectedIndex="0" Width="110" Margin="0,2,8,2">
+          <ComboBoxItem Content="Tất cả"/>
+          <ComboBoxItem Content="Khớp"/>
+          <ComboBoxItem Content="Khác đích"/>
+        </ComboBox>
+
+        <!-- Search Box -->
+        <TextBox x:Name="SearchBox" Watermark="Tìm kiếm đường dẫn..." Width="180" Margin="8,2,8,2" TextChanged="SearchBox_TextChanged"/>
+        <Button Content="Xóa bộ lọc" Click="ClearFilterButton_Click" Margin="0,2,8,2"/>
+      </WrapPanel>
+    </Border>
+
+    <!-- Toolbar chọn nhanh & Thao tác hàng loạt -->
+    <Border Grid.Row="1" Classes="panel" Padding="10,8" Margin="0,0,0,8">
+      <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <Button Content="Chọn tất cả" Click="SelectAllButton_Click" Margin="0,2,6,2"/>
+        <Button Content="Bỏ chọn" Click="SelectNoneButton_Click" Margin="0,2,6,2"/>
+        <Button Content="Đảo chọn" Click="InvertSelectButton_Click" Margin="0,2,12,2"/>
+
+        <Button Content="Chọn MKLINK" Click="SelectMklinkButton_Click" Margin="0,2,6,2"/>
+        <Button Content="Chọn Folder thật" Click="SelectRealFolderButton_Click" Margin="0,2,6,2"/>
+        <Button Content="Chọn Chưa có" Click="SelectMissingButton_Click" Margin="0,2,16,2"/>
+
+        <!-- Action buttons -->
+        <Button Content="Make mklink (Copy)" Click="MakeMklinkCopyButton_Click" Classes="accent" Margin="0,2,6,2"/>
+        <Button Content="Make mklink (No copy)" Click="MakeMklinkNoCopyButton_Click" Classes="danger" Margin="0,2,6,2"/>
+        <Button Content="Make reverse" Click="MakeReverseButton_Click" Classes="purple" Margin="0,2,6,2"/>
+        <Button Content="Move to destination" Click="MoveToDestinationButton_Click" Margin="0,2,6,2"/>
+        <Button Content="Xóa dòng nguồn" Click="DeleteSelectedLinesButton_Click" Classes="danger" Margin="6,2,0,2"/>
+      </WrapPanel>
+    </Border>
+
+    <!-- DataGrid Check Mklink -->
+    <Border Grid.Row="2" Classes="panel" Padding="2">
+      <DataGrid x:Name="CheckGrid"
+                AutoGenerateColumns="False"
+                CanUserResizeColumns="True"
+                CanUserSortColumns="True"
+                SelectionMode="Extended">
+        <DataGrid.Columns>
+          <DataGridCheckBoxColumn Header="Chọn" Binding="{Binding IsSelected}" Width="60"/>
+          
+          <DataGridTextColumn Header="Normalized Input" Binding="{Binding NormalizedInput}" Width="2*" IsReadOnly="True"/>
+          
+          <DataGridTextColumn Header="Output Path" Binding="{Binding OutputPath}" Width="2*" IsReadOnly="True"/>
+          
+          <!-- Status với text block -->
+          <DataGridTemplateColumn Header="Trạng thái" Width="120">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate DataType="models:MklinkCheckEntry">
+                <TextBlock Text="{Binding Status}"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Foreground="{Binding StatusColorHex}"/>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTextColumn Header="Đích có sẵn" Binding="{Binding DestinationCheckText}" Width="100" IsReadOnly="True"/>
+
+          <DataGridTextColumn Header="Đã MKLINK tới" Binding="{Binding AlreadyMklinkTo}" Width="2*" IsReadOnly="True"/>
+
+          <DataGridTextColumn Header="So khớp" Binding="{Binding MatchedText}" Width="90" IsReadOnly="True"/>
+        </DataGrid.Columns>
+      </DataGrid>
+    </Border>
+
+    <!-- Footer thống kê -->
+    <Border Grid.Row="3" Classes="panel" Padding="10,6" Margin="0,8,0,0">
+      <TextBlock x:Name="SummaryTextBlock"
+                 FontSize="12"
+                 FontWeight="SemiBold"
+                 Foreground="#60A5FA"
+                 Text="Đang tải dữ liệu..."/>
+    </Border>
+  </Grid>
+</UserControl>

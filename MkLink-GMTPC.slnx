@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MkLink.App/MkLink.App.csproj" />
+    <Project Path="src/MkLink.Launcher/MkLink.Launcher.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,25 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+artifacts_temp/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Portable deployed runtimes (chỉ commit source code và cấu trúc thư mục)
+.portable/runtimes/
+.portable/settings/*.txt
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

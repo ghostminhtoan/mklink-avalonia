@@ -1,0 +1,130 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20" Background="#1E1E1E">
+      <StackPanel Spacing="10">
+        <Button Content="Standard Button" />
+        <Button Classes="primary" Content="Primary Button" />
+        <Button Classes="accent" Content="Accent Button" />
+        <Button Classes="danger" Content="Danger Button" />
+        <TextBox Text="Sample Text" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Button Styles -->
+  <Style Selector="Button">
+    <Setter Property="Background" Value="#2D2D30" />
+    <Setter Property="Foreground" Value="#E0E0E0" />
+    <Setter Property="BorderBrush" Value="#3F3F46" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="10,6" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="Button:pointerover">
+    <Setter Property="Background" Value="#3E3E42" />
+    <Setter Property="BorderBrush" Value="#52525B" />
+  </Style>
+  <Style Selector="Button:pressed">
+    <Setter Property="Background" Value="#252526" />
+  </Style>
+  <Style Selector="Button:disabled">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+
+  <!-- Button Classes -->
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="#2563EB" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+    <Setter Property="BorderBrush" Value="#3B82F6" />
+  </Style>
+  <Style Selector="Button.primary:pointerover">
+    <Setter Property="Background" Value="#3B82F6" />
+  </Style>
+  <Style Selector="Button.primary:pressed">
+    <Setter Property="Background" Value="#1D4ED8" />
+  </Style>
+
+  <Style Selector="Button.accent">
+    <Setter Property="Background" Value="#C97728" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+    <Setter Property="BorderBrush" Value="#D97706" />
+  </Style>
+  <Style Selector="Button.accent:pointerover">
+    <Setter Property="Background" Value="#E08A38" />
+  </Style>
+
+  <Style Selector="Button.danger">
+    <Setter Property="Background" Value="#B33A3A" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+    <Setter Property="BorderBrush" Value="#DC2626" />
+  </Style>
+  <Style Selector="Button.danger:pointerover">
+    <Setter Property="Background" Value="#D04949" />
+  </Style>
+
+  <Style Selector="Button.purple">
+    <Setter Property="Background" Value="#7C5CFF" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+    <Setter Property="BorderBrush" Value="#9278FF" />
+  </Style>
+  <Style Selector="Button.purple:pointerover">
+    <Setter Property="Background" Value="#9278FF" />
+  </Style>
+
+  <!-- TextBox Styles -->
+  <Style Selector="TextBox">
+    <Setter Property="Background" Value="#1E1E1E" />
+    <Setter Property="Foreground" Value="#F3F4F6" />
+    <Setter Property="BorderBrush" Value="#3F3F46" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8,5" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="TextBox:focus">
+    <Setter Property="BorderBrush" Value="#3B82F6" />
+  </Style>
+
+  <!-- Panel Border Style -->
+  <Style Selector="Border.panel">
+    <Setter Property="Background" Value="#252526" />
+    <Setter Property="BorderBrush" Value="#333337" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+
+  <!-- Title Text -->
+  <Style Selector="TextBlock.panelTitle">
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Foreground" Value="#93C5FD" />
+    <Setter Property="Margin" Value="0,0,0,6" />
+  </Style>
+
+  <!-- DataGrid Win11 Dark Theme Tweaks -->
+  <Style Selector="DataGrid">
+    <Setter Property="Background" Value="#1E1E1E" />
+    <Setter Property="BorderBrush" Value="#333337" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="RowBackground" Value="#1E1E1E" />
+    <Setter Property="GridLinesVisibility" Value="Horizontal" />
+    <Setter Property="HorizontalGridLinesBrush" Value="#2D2D30" />
+    <Setter Property="VerticalGridLinesBrush" Value="Transparent" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="DataGridColumnHeader">
+    <Setter Property="Background" Value="#2D2D30" />
+    <Setter Property="Foreground" Value="#E0E0E0" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Padding" Value="8,6" />
+    <Setter Property="SeparatorBrush" Value="#3F3F46" />
+  </Style>
+  <Style Selector="DataGridRow:selected">
+    <Setter Property="Background" Value="#264F78" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+</Styles>
